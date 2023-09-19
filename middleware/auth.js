@@ -7,10 +7,11 @@ function auth() {
 const validateToken = {
     before: async (request) => {
         try {
-            const token = request.event.headers.authorization.replace('Bearer: ', '')
+            const token = request.event.headers.authorization.replace('Bearer ', '')
+            const queryString = request.event.rawQueryString
             if (!token) throw new Error()
-
             const data = jwt.verify(token, 'a1b1c1')
+            console.log(data)
             request.event.id = data.id
             request.event.userId = data.userId
 

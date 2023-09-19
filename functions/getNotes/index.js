@@ -21,10 +21,10 @@ async function getNotes(userid) {
 
 const handler = middy()
     .handler(async (event, context) => {
-        console.log(event)
-        console.log(context)
         try {
-            return await getNotes(event.rawQueryString)
+            console.log(event)
+            if (!event.id || event?.error && event?.error === '401') return sendError(401, { success: false, message: 'Invalid token' })
+            return await getNotes(event.rawQueryString.toString())
         } catch (error) {
             return sendError(400, { success: false, message: error.message })
         }
