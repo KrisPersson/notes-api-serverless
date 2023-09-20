@@ -1,22 +1,10 @@
-const { sendResponse } = require('../../responses/index')
 const middy = require('@middy/core')
+const { newError } = require('../utils')
 
-const validatePostBody = {
+const validateGetQuery = {
     before: async (request) => {
-        try {
-            const { userId, id, title, note } = request.event.body
-            if (request.event.id !== id || request.event.userId !== userId) throw new Error('401')
-
-        } catch (error) {
-            request.event.error = error.message
-
-            return request.response
-        }
-    },
-    onError: async (request)=> {
-        request.event.error = '450'
-
-        return request.response
+        const queryString = request?.event.rawQueryString
+        if (request.event.routeKey === 'GET /api/notes' && !queryString) newError(request, 401, 'No query string provided')
     }
 }
 function validatePutBody(body) {
@@ -32,4 +20,4 @@ function validateSignupBody(body) {
 
 }
 
-module.exports = { auth, validatePostBody, validatePutBody, validateDeleteBody, validateLoginBody, validateSignupBody }
+module.exports = { validateGetQuery, validatePutBody, validateDeleteBody, validateLoginBody, validateSignupBody }

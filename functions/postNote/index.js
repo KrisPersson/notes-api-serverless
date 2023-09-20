@@ -4,14 +4,32 @@ const { postBodySchema } = require('../../schemas/index')
 const { validateToken } = require('../../middleware/auth')
 const middy = require('@middy/core')
 const httpJsonBodyParser = require('@middy/http-json-body-parser')
-const httpErrorHandler = require('@middy/http-error-handler')
 const { errorHandler } = require('../../middleware/errorHandler')
+const { newError } = require('../../utils')
+const { v4: uuidv4 } = require('uuid');
 
 const validator = require('@middy/validator')
 const { transpileSchema } = require('@middy/validator/transpile')
 
 async function postNote(body) {
-    console.log('Got to Lambda!')
+    const { title, text, userId } = body
+    const itemId = uuidv4()
+    const today = new Date()
+    const item = {
+        userId,
+        itemId: `note-${itemId.slice(0, 10)}`,
+        title,
+        text,
+        createdAt: today.toLocaleString(),
+        modifiedAt: null
+    }
+
+    await db.put({
+        TableName: 'notes-db',
+        Item: {...item}
+    }).promise()
+
+    return sendResponse({ success: true, newNote: {...item} })
 }
 
 const handler = middy()
@@ -23,12 +41,11 @@ const handler = middy()
     .handler(async (event, context) => {
         try {
             console.log(event)
-            if (!event.id || event?.error && event?.error === '401') return sendError(401, { success: false, message: 'Invalid token' })
+            if (!event.id) newError(401, 'Invalid token')
             return await postNote(event?.body)
         } catch (error) {
             return sendError(400, { success: false, message: error.message })
         }
     })
-
 
 module.exports = { handler }

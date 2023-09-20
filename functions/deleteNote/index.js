@@ -1,8 +1,43 @@
 const { db } = require('../../services/index')
-const { sendResponse } = require('../../responses/index')
+const { sendResponse, sendError } = require('../../responses/index')
+const { deleteBodySchema } = require('../../schemas/index')
+const { validateToken } = require('../../middleware/auth')
+const middy = require('@middy/core')
+const httpJsonBodyParser = require('@middy/http-json-body-parser')
+const { errorHandler } = require('../../middleware/errorHandler')
+const { newError } = require('../../utils')
 
-function deleteNote() {
+const validator = require('@middy/validator')
+const { transpileSchema } = require('@middy/validator/transpile')
 
+async function deleteNote(body) {
+    const { userId, noteId } = body
+    const response = await db.delete({
+        TableName: 'notes-db',
+        Key: {
+            userId,
+            itemId: noteId
+        }
+    }).promise()
+    console.log(response)
+    return sendResponse({ success: true, message: 'Note successfully deleted!' })
 }
 
-module.exports = { deleteNote }
+const handler = middy()
+    
+    .use(httpJsonBodyParser())
+    .use(validateToken)
+    .use(validator({ eventSchema: transpileSchema(deleteBodySchema) }))
+    .use(errorHandler())
+    .handler(async (event, context) => {
+        try {
+            console.log(event)
+            if (!event.id) newError(401, 'Invalid token')
+            if (event?.body.noteId === 'user-info') newError(403, 'This endpoint is not allowed to delete user-info.')
+            return await deleteNote(event?.body)
+        } catch (error) {
+            return sendError(400, { success: false, message: error.message })
+        }
+    })
+
+module.exports = { handler }
