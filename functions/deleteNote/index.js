@@ -12,6 +12,14 @@ const { transpileSchema } = require('@middy/validator/transpile')
 
 async function deleteNote(body) {
     const { userId, noteId } = body
+
+    const { Item } = await db.get({
+        TableName: 'notes-db',
+        Key: { userId: userId, itemId: noteId }
+    }).promise()
+
+    if (!Item) newError(404, 'Note could not be found')
+
     const response = await db.delete({
         TableName: 'notes-db',
         Key: {
@@ -30,14 +38,10 @@ const handler = middy()
     .use(validator({ eventSchema: transpileSchema(deleteBodySchema) }))
     .use(errorHandler())
     .handler(async (event, context) => {
-        try {
-            console.log(event)
-            if (!event.id) newError(401, 'Invalid token')
-            if (event?.body.noteId === 'user-info') newError(403, 'This endpoint is not allowed to delete user-info.')
-            return await deleteNote(event?.body)
-        } catch (error) {
-            return sendError(400, { success: false, message: error.message })
-        }
+        console.log(event)
+        if (!event.id) newError(401, 'Invalid token')
+        if (event?.body.noteId === 'user-info') newError(403, 'This endpoint is not allowed to delete user-info.')
+        return await deleteNote(event?.body)
     })
 
 module.exports = { handler }

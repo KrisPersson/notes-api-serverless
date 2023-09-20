@@ -1,10 +1,6 @@
 const jwt = require('jsonwebtoken')
 const { newError } = require('../utils')
 
-function auth() {
-
-}
-
 const validateToken = {
     before: async (request) => {
         const token = request.event.headers.authorization.replace('Bearer ', '').replace('Bearer', '')
@@ -15,9 +11,7 @@ const validateToken = {
         if (!data.id || !data.userId) newError(401, 'Invalid token')
         request.event.id = data.id
         request.event.userId = data.userId
-    },
-    onError: async (request) => {
-        request.error.statusCode = 333
-    },}
+    }
+}
 
 module.exports = { validateToken }

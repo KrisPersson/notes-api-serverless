@@ -18,6 +18,4 @@ function sendError(statusCode, response) {
     } 
 }
 
-
-
 module.exports = { sendResponse, sendError }

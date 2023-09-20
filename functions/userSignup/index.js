@@ -7,12 +7,12 @@ async function userSignup(body) {
     const { username, password, email } = body
 
     const { Count } = await db.query({
-        "TableName": "notes-db",
-        "KeyConditionExpression": "#userId = :pk",
-        "ExpressionAttributeNames": {
+        TableName: "notes-db",
+        KeyConditionExpression: "#userId = :pk",
+        ExpressionAttributeNames: {
             "#userId": "userId"
         },
-        "ExpressionAttributeValues": {
+        ExpressionAttributeValues: {
             ":pk": username
         }
     }).promise()

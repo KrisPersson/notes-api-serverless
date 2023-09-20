@@ -27,13 +27,9 @@ async function getNotes(userid) {
 
 const handler = middy()
     .handler(async (event, context) => {
-        try {
-            console.log(event)
-            if (!event.id) newError(401, 'Invalid token')
-            return await getNotes(event.rawQueryString.toString())
-        } catch (error) {
-            return sendError(400, { success: false, message: error.message })
-        }
+        console.log(event)
+        if (!event.id) newError(401, 'Invalid token')
+        return await getNotes(event.rawQueryString.toString())
     })
     .use(validateToken)
     .use(validateGetQuery)

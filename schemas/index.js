@@ -1,5 +1,3 @@
-
-
 const postBodySchema = {
     type: 'object',
     properties: {

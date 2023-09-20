@@ -39,13 +39,9 @@ const handler = middy()
     .use(validator({ eventSchema: transpileSchema(postBodySchema) }))
     .use(errorHandler())
     .handler(async (event, context) => {
-        try {
-            console.log(event)
-            if (!event.id) newError(401, 'Invalid token')
-            return await postNote(event?.body)
-        } catch (error) {
-            return sendError(400, { success: false, message: error.message })
-        }
+        console.log(event)
+        if (!event.id) newError(401, 'Invalid token')
+        return await postNote(event?.body)
     })
 
 module.exports = { handler }

@@ -7,17 +7,5 @@ const validateGetQuery = {
         if (request.event.routeKey === 'GET /api/notes' && !queryString) newError(request, 401, 'No query string provided')
     }
 }
-function validatePutBody(body) {
 
-}
-function validateDeleteBody(body) {
-
-}
-function validateLoginBody(body) {
-
-}
-function validateSignupBody(body) {
-
-}
-
-module.exports = { validateGetQuery, validatePutBody, validateDeleteBody, validateLoginBody, validateSignupBody }
+module.exports = { validateGetQuery }

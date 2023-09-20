@@ -12,6 +12,14 @@ const { transpileSchema } = require('@middy/validator/transpile')
 
 async function editNote(body) {
     const { title, text, userId, noteId } = body
+
+    const { Item } = await db.get({
+        TableName: 'notes-db',
+        Key: { userId: userId, itemId: noteId }
+    }).promise()
+
+    if (!Item) newError(404, 'Note could not be found')
+
     const today = new Date()
     const { Attributes } = await db.update({
         TableName: 'notes-db',
@@ -38,13 +46,9 @@ const handler = middy()
     .use(validator({ eventSchema: transpileSchema(editBodySchema) }))
     .use(errorHandler())
     .handler(async (event, context) => {
-        try {
-            console.log(event)
-            if (!event.id) newError(401, 'Invalid token')
-            return await editNote(event?.body)
-        } catch (error) {
-            return sendError(400, { success: false, message: error.message })
-        }
+        console.log(event)
+        if (!event.id) newError(401, 'Invalid token')
+        return await editNote(event?.body)
     })
 
 module.exports = { handler }
