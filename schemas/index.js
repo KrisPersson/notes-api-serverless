@@ -85,4 +85,53 @@ const deleteBodySchema = {
     }
 }
 
-module.exports = { postBodySchema, editBodySchema, deleteBodySchema }
+const loginBodySchema = {
+    type: 'object',
+    properties: {
+      body: {
+        type: 'object',
+        required: ['username', 'password'],
+        properties: {
+            username: {
+                type: 'string',
+                minLength: 1,
+                maxLength: 50
+                },
+            password: {
+                type: 'string',
+                minLength: 1,
+                maxLength: 40
+            }
+        }
+      }
+    }
+}
+
+const signupBodySchema = {
+    type: 'object',
+    properties: {
+      body: {
+        type: 'object',
+        required: ['username', 'password', 'email'],
+        properties: {
+            username: {
+                type: 'string',
+                minLength: 1,
+                maxLength: 50
+            },
+            password: {
+                type: 'string',
+                minLength: 1,
+                maxLength: 40
+            },
+            email: {
+                type: 'string',
+                minLength: 5,
+                maxLength: 50
+            }
+        }
+      }
+    }
+}
+
+module.exports = { postBodySchema, editBodySchema, deleteBodySchema, loginBodySchema, signupBodySchema }

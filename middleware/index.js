@@ -1,4 +1,3 @@
-const middy = require('@middy/core')
 const { newError } = require('../utils')
 
 const validateGetQuery = {
