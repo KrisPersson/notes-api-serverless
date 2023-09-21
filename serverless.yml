@@ -18,37 +18,37 @@ package:
 
 functions:
   getNotes:
-    handler: functions/getNotes/index.handler
+    handler: dist/functions/getNotes/index.handler
     events:
     - httpApi:
         path: '/api/notes'
         method: GET
   postNote:
-    handler: functions/postNote/index.handler
+    handler: dist/functions/postNote/index.handler
     events:
     - httpApi:
         path: '/api/notes'
         method: POST
   editNote:
-    handler: functions/editNote/index.handler
+    handler: dist/functions/editNote/index.handler
     events:
     - httpApi:
         path: '/api/notes'
         method: PUT
   deleteNote:
-    handler: functions/deleteNote/index.handler
+    handler: dist/functions/deleteNote/index.handler
     events:
     - httpApi:
         path: '/api/notes'
         method: DELETE
   userLogin:
-    handler: functions/userLogin/index.handler
+    handler: dist/functions/userLogin/index.handler
     events:
     - httpApi:
         path: '/api/user/login'
         method: POST
   userSignup:
-    handler: functions/userSignup/index.handler
+    handler: dist/functions/userSignup/index.handler
     events:
     - httpApi:
         path: '/api/user/signup'
