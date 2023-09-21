@@ -30,6 +30,7 @@ async function userSignup(body) {
     }
 
     const hashedPassword = await encryptPassword(password)
+    const today = new Date()
 
     await db.put({
         TableName: 'notes-db',
@@ -38,7 +39,8 @@ async function userSignup(body) {
             itemId: 'user-info',
             id: uuidv4(),
             password: hashedPassword,
-            email
+            email,
+            createdAt: today.toLocaleString()
         }
     }).promise()
 

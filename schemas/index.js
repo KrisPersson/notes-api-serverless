@@ -10,11 +10,6 @@ const postBodySchema = {
                 minLength: 1,
                 maxLength: 50
                 },
-            id: {
-                type: 'string',
-                minLength: 20,
-                maxLength: 40
-            },
             title: {
                 type: 'string',
                 minLength: 1,

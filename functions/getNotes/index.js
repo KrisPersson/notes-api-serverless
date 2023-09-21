@@ -26,14 +26,14 @@ async function getNotes(userid) {
 }
 
 const handler = middy()
+    
+    .use(validateToken)
+    .use(validateGetQuery)
+    .use(errorHandler())
     .handler(async (event, context) => {
         console.log(event)
         if (!event.id) newError(401, 'Invalid token')
         return await getNotes(event.rawQueryString.toString())
     })
-    .use(validateToken)
-    .use(validateGetQuery)
-    .use(errorHandler())
-
 
 module.exports = { handler }
