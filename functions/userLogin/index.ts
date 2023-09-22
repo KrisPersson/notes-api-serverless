@@ -1,17 +1,24 @@
-const { db } = require('../../services/index')
-const jwt = require('jsonwebtoken')
+import { db } from '../../services/index'
+import jwt from 'jsonwebtoken'
 
-const { sendResponse } = require('../../responses/index')
-const { comparePassword } = require('../../bcrypt/index')
-const { loginBodySchema } = require('../../schemas/index')
-const { newError } = require('../../utils')
-const middy = require('@middy/core')
-const { errorHandler } = require('../../middleware/errorHandler')
-const httpJsonBodyParser = require('@middy/http-json-body-parser')
-const validator = require('@middy/validator')
-const { transpileSchema } = require('@middy/validator/transpile')
+import { sendResponse } from '../../responses/index'
+import { comparePassword } from '../../bcrypt/index'
+import { loginBodySchema } from '../../schemas/index'
+import { newError } from '../../utils'
+import middy from '@middy/core'
+import { errorHandler } from '../../middleware/errorHandler'
+import httpJsonBodyParser from '@middy/http-json-body-parser'
+import validator from '@middy/validator'
+import { transpileSchema } from '@middy/validator/transpile'
 
-async function userLogin(body) {
+import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda"
+
+type userLoginRequestBody = {
+    username: string;
+    password: string;
+}
+
+async function userLogin(body: userLoginRequestBody): Promise<any> {
     const { username, password } = body
 
     const { Item } = await db.get({
@@ -32,14 +39,15 @@ async function userLogin(body) {
     return sendResponse({ success: true, message: 'User logged in!', token })
 }
 
-const handler = middy()
+export const handler = middy()
     
     .use(httpJsonBodyParser())
     .use(validator({ eventSchema: transpileSchema(loginBodySchema) }))
     .use(errorHandler())
-    .handler(async (event, context) => {
+    .handler(async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
         console.log(event)
-        return await userLogin(event?.body)
+        const body = event.body as unknown as userLoginRequestBody
+
+        return await userLogin(body)
     })
 
-module.exports = { handler }

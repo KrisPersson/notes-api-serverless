@@ -1,4 +1,4 @@
-const httpErrorHandler = require("@middy/http-error-handler")
+import httpErrorHandler from "@middy/http-error-handler"
 
 function jsonErrorHandler() {
   return {
@@ -15,4 +15,4 @@ function jsonErrorHandler() {
   }
 }
 
-module.exports = { errorHandler: () => [httpErrorHandler(), jsonErrorHandler()] }
+export const errorHandler = () => [httpErrorHandler(), jsonErrorHandler()] 

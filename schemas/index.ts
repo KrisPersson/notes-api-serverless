@@ -1,4 +1,4 @@
-const postBodySchema = {
+export const postBodySchema = {
     type: 'object',
     properties: {
       body: {
@@ -26,7 +26,7 @@ const postBodySchema = {
     }
 }
 
-const editBodySchema = {
+export const editBodySchema = {
     type: 'object',
     properties: {
       body: {
@@ -58,7 +58,7 @@ const editBodySchema = {
     }
 }
 
-const deleteBodySchema = {
+export const deleteBodySchema = {
     type: 'object',
     properties: {
       body: {
@@ -80,7 +80,7 @@ const deleteBodySchema = {
     }
 }
 
-const loginBodySchema = {
+export const loginBodySchema = {
     type: 'object',
     properties: {
       body: {
@@ -102,7 +102,7 @@ const loginBodySchema = {
     }
 }
 
-const signupBodySchema = {
+export const signupBodySchema = {
     type: 'object',
     properties: {
       body: {
@@ -128,5 +128,3 @@ const signupBodySchema = {
       }
     }
 }
-
-module.exports = { postBodySchema, editBodySchema, deleteBodySchema, loginBodySchema, signupBodySchema }

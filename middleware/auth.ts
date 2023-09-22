@@ -1,7 +1,7 @@
-const jwt = require('jsonwebtoken')
-const { newError } = require('../utils')
+import jwt from 'jsonwebtoken'
+import { newError } from '../utils'
 
-const validateToken = {
+export const validateToken = {
     before: async (request) => {
         try {
             const token = request.event.headers.authorization.replace('Bearer ', '').replace('Bearer', '')
@@ -18,4 +18,4 @@ const validateToken = {
     }
 }
 
-module.exports = { validateToken }
+// module.exports = { validateToken }?\

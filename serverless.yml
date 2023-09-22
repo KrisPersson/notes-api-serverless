@@ -18,7 +18,7 @@ package:
 
 functions:
   getNotes:
-    handler: dist/functions/getNotes/index.handler
+    handler: dist/functions/getNotes/index.getNotesHandler
     events:
     - httpApi:
         path: '/api/notes'

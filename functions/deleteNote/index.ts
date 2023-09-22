@@ -1,16 +1,23 @@
-const { db } = require('../../services/index')
-const { sendResponse, sendError } = require('../../responses/index')
-const { deleteBodySchema } = require('../../schemas/index')
-const { validateToken } = require('../../middleware/auth')
-const middy = require('@middy/core')
-const httpJsonBodyParser = require('@middy/http-json-body-parser')
-const { errorHandler } = require('../../middleware/errorHandler')
-const { newError } = require('../../utils')
+import { db } from '../../services/index'
+import { sendResponse } from '../../responses/index'
+import { deleteBodySchema } from '../../schemas/index'
+import { validateToken } from '../../middleware/auth'
+import middy from '@middy/core'
+import httpJsonBodyParser from '@middy/http-json-body-parser'
+import { errorHandler } from '../../middleware/errorHandler'
+import { newError } from '../../utils'
 
-const validator = require('@middy/validator')
-const { transpileSchema } = require('@middy/validator/transpile')
+import validator from '@middy/validator'
+import { transpileSchema } from '@middy/validator/transpile'
 
-async function deleteNote(body) {
+import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda"
+
+type deleteNoteRequestBody = {
+    userId: string;
+    noteId: string;
+}
+
+async function deleteNote(body: deleteNoteRequestBody) {
     const { userId, noteId } = body
 
     const { Item } = await db.get({
@@ -31,17 +38,15 @@ async function deleteNote(body) {
     return sendResponse({ success: true, message: 'Note successfully deleted!' })
 }
 
-const handler = middy()
+export const handler = middy()
     
     .use(httpJsonBodyParser())
     .use(validateToken)
     .use(validator({ eventSchema: transpileSchema(deleteBodySchema) }))
     .use(errorHandler())
-    .handler(async (event, context) => {
+    .handler(async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
         console.log(event)
-        if (!event.id) newError(401, 'Invalid token')
-        if (event?.body.noteId === 'user-info') newError(403, 'This endpoint is not allowed to delete user-info.')
-        return await deleteNote(event?.body)
+        const body = event.body as unknown as deleteNoteRequestBody
+        if (body.noteId === 'user-info') newError(403, 'This endpoint is not allowed to delete user-info.')
+        return await deleteNote(body)
     })
-
-module.exports = { handler }

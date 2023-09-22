@@ -1,15 +1,30 @@
-const { db } = require('../../services/index')
-const { sendResponse, sendError } = require('../../responses/index')
-const { validateToken } = require('../../middleware/auth')
-const { validateGetQuery } = require('../../middleware/index')
-const { errorHandler } = require('../../middleware/errorHandler')
-const { newError } = require('../../utils')
+import { db } from '../../services/index'
+import { sendResponse } from '../../responses/index'
+import { validateToken } from '../../middleware/auth'
+import { validateGetQuery } from '../../middleware/index'
+import { errorHandler } from '../../middleware/errorHandler'
 
-const middy = require('@middy/core')
+import middy from '@middy/core'
 
-async function getNotes(userid) {
+import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda"
+import { ItemList } from 'aws-sdk/clients/dynamodb'
 
-    const { Items } = await db.query({
+type ExtAPIGatewayProxyEvent = APIGatewayProxyEvent & {
+    rawQueryString: string;
+}
+
+interface Note {
+    userId: string;
+    itemId: string;
+    createdAt: string;
+    title: string;
+    text: string;
+    modifiedAt: string | null
+}
+
+async function getNotes(userid: string) {
+
+    const query = await db.query({
         TableName: "notes-db",
         KeyConditionExpression: "#userId = :pk AND begins_with(#itemId, :skprefix)",
         ExpressionAttributeNames: {
@@ -22,18 +37,19 @@ async function getNotes(userid) {
         }
     }).promise()
 
-    return sendResponse({ success: true, notes: [...Items] })
+    const notes = query.Items as ItemList
+
+    return sendResponse({ success: true, notes: [...notes] })
 }
 
-const handler = middy()
+export const getNotesHandler = middy()
     
     .use(validateToken)
     .use(validateGetQuery)
     .use(errorHandler())
-    .handler(async (event, context) => {
+    .handler(async (event: ExtAPIGatewayProxyEvent ): Promise<APIGatewayProxyResult> => {
         console.log(event)
-        if (!event.id) newError(401, 'Invalid token')
         return await getNotes(event.rawQueryString.toString())
     })
 
-module.exports = { handler }
+// module.exports = { handler }

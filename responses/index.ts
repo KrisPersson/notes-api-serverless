@@ -1,4 +1,4 @@
-function sendResponse(response) {
+export function sendResponse(response) {
     return {
         statusCode: 200,
         headers: {
@@ -8,7 +8,7 @@ function sendResponse(response) {
     } 
 }
 
-function sendError(statusCode, response) {
+export function sendError(statusCode: number, response) {
     return {
         statusCode,
         headers: {
@@ -17,5 +17,3 @@ function sendError(statusCode, response) {
         body: JSON.stringify(response)
     } 
 }
-
-module.exports = { sendResponse, sendError }

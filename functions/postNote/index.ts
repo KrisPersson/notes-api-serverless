@@ -1,17 +1,25 @@
-const { db } = require('../../services/index')
-const { sendResponse, sendError } = require('../../responses/index')
-const { postBodySchema } = require('../../schemas/index')
-const { validateToken } = require('../../middleware/auth')
-const middy = require('@middy/core')
-const httpJsonBodyParser = require('@middy/http-json-body-parser')
-const { errorHandler } = require('../../middleware/errorHandler')
-const { newError } = require('../../utils')
-const { v4: uuidv4 } = require('uuid');
+import { db } from '../../services/index'
+import { sendResponse, sendError } from '../../responses/index'
+import { postBodySchema } from '../../schemas/index'
+import { validateToken } from '../../middleware/auth'
+import middy from '@middy/core'
+import httpJsonBodyParser from '@middy/http-json-body-parser'
+import { errorHandler } from '../../middleware/errorHandler'
+import { v4 as uuidv4 } from 'uuid'
 
-const validator = require('@middy/validator')
-const { transpileSchema } = require('@middy/validator/transpile')
+import validator from '@middy/validator'
+import { transpileSchema } from '@middy/validator/transpile'
 
-async function postNote(body) {
+import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda"
+
+type postNoteRequestBody = {
+    userId: string;
+    noteId: string;
+    title: string;
+    text: string;
+}
+
+async function postNote(body: postNoteRequestBody) {
     const { title, text, userId } = body
     const itemId = uuidv4()
     const today = new Date()
@@ -32,16 +40,16 @@ async function postNote(body) {
     return sendResponse({ success: true, newNote: {...item} })
 }
 
-const handler = middy()
+export const handler = middy()
     
     .use(httpJsonBodyParser())
     .use(validateToken)
     .use(validator({ eventSchema: transpileSchema(postBodySchema) }))
     .use(errorHandler())
-    .handler(async (event, context) => {
+    .handler(async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
         console.log(event)
-        if (!event.id) newError(401, 'Invalid token')
-        return await postNote(event?.body)
+        const body = event.body as unknown as postNoteRequestBody
+        return await postNote(body)
     })
 
-module.exports = { handler }
+// module.exports = { handler }
