@@ -1,4 +1,7 @@
-export function sendResponse(response) {
+import { ResponseBody } from "../types/index"
+
+
+export function sendResponse(response: ResponseBody) {
     return {
         statusCode: 200,
         headers: {
@@ -8,7 +11,7 @@ export function sendResponse(response) {
     } 
 }
 
-export function sendError(statusCode: number, response) {
+export function sendError(statusCode: number, response: ResponseBody) {
     return {
         statusCode,
         headers: {

@@ -50,4 +50,3 @@ export const handler = middy()
 
         return await userLogin(body)
     })
-

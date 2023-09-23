@@ -1,8 +1,9 @@
 import httpErrorHandler from "@middy/http-error-handler"
+import { MiddyRequest } from "../types/index"
 
 function jsonErrorHandler() {
   return {
-    onError: async (request) => {
+    onError: async (request: MiddyRequest) => {
       const { error } = request
       request.response = {
         statusCode: error?.statusCode ?? 500,

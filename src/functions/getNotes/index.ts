@@ -3,24 +3,10 @@ import { sendResponse } from '../../responses/index'
 import { validateToken } from '../../middleware/auth'
 import { validateGetQuery } from '../../middleware/index'
 import { errorHandler } from '../../middleware/errorHandler'
-
 import middy from '@middy/core'
 
-import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda"
-import { ItemList } from 'aws-sdk/clients/dynamodb'
-
-type ExtAPIGatewayProxyEvent = APIGatewayProxyEvent & {
-    rawQueryString: string;
-}
-
-interface Note {
-    userId: string;
-    itemId: string;
-    createdAt: string;
-    title: string;
-    text: string;
-    modifiedAt: string | null
-}
+import { APIGatewayProxyResult } from "aws-lambda"
+import { MiddyEvent, Note } from "../../types/index"
 
 async function getNotes(userid: string) {
 
@@ -37,7 +23,7 @@ async function getNotes(userid: string) {
         }
     }).promise()
 
-    const notes = query.Items as ItemList
+    const notes = query.Items as Note[]
 
     return sendResponse({ success: true, notes: [...notes] })
 }
@@ -47,9 +33,8 @@ export const getNotesHandler = middy()
     .use(validateToken)
     .use(validateGetQuery)
     .use(errorHandler())
-    .handler(async (event: ExtAPIGatewayProxyEvent ): Promise<APIGatewayProxyResult> => {
+    .handler(async (event: MiddyEvent ): Promise<APIGatewayProxyResult> => {
         console.log(event)
-        return await getNotes(event.rawQueryString.toString())
+        const string = event.rawQueryString?.toString() as string
+        return await getNotes(string)
     })
-
-// module.exports = { handler }

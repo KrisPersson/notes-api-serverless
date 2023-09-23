@@ -1,6 +1,6 @@
 module.exports = {
-	mode: 'development',
-	module: {
+    mode: 'development',
+    module: {
         rules: [
             {
                 test: /\.html$/,
@@ -10,7 +10,15 @@ module.exports = {
                         options: { minimize: true }
                     }
                 ]
+            },
+            {
+                test: /\.tsx?$/,
+                use: 'ts-loader',
+                exclude: /node_modules/,
             }
         ]
+    },
+    resolve: {
+        extensions: ['.tsx', '.ts', '.js'],
     }
-}
+};

@@ -1,5 +1,5 @@
 import { db } from '../../services/index'
-import { sendResponse, sendError } from '../../responses/index'
+import { sendResponse } from '../../responses/index'
 import { postBodySchema } from '../../schemas/index'
 import { validateToken } from '../../middleware/auth'
 import middy from '@middy/core'
@@ -11,6 +11,7 @@ import validator from '@middy/validator'
 import { transpileSchema } from '@middy/validator/transpile'
 
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda"
+import { Note } from "../../types/index"
 
 type postNoteRequestBody = {
     userId: string;
@@ -23,7 +24,7 @@ async function postNote(body: postNoteRequestBody) {
     const { title, text, userId } = body
     const itemId = uuidv4()
     const today = new Date()
-    const item = {
+    const item: Note = {
         userId,
         itemId: `note-${itemId.slice(0, 10)}`,
         title,
@@ -51,5 +52,3 @@ export const handler = middy()
         const body = event.body as unknown as postNoteRequestBody
         return await postNote(body)
     })
-
-// module.exports = { handler }

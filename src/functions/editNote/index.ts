@@ -11,6 +11,7 @@ import validator from '@middy/validator'
 import { transpileSchema } from '@middy/validator/transpile'
 
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda"
+import { Note } from "../../types/index"
 
 type editNoteRequestBody = {
     userId: string;
@@ -45,7 +46,9 @@ async function editNote(body: editNoteRequestBody) {
         }
       }).promise()
 
-    return sendResponse({ success: true, updatedNote: {...Attributes} })
+      const note = {...Attributes} as Note
+
+    return sendResponse({ success: true, updatedNote: {...note} })
 }
 
 export const handler = middy()
